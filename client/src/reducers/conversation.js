@@ -5,6 +5,7 @@ import {
   CLOSECONVERSATION,
   GETCONVERSATIONBYID,
   GETSTORAGE,
+  UPDATEICOMINGMESSAGES,
   SETFUZZYSEARCHRESULTS
 } from '../actions/index';
 
@@ -19,6 +20,10 @@ const conversationReducer = (activeConversation = {}, action) => {
 
     case GETCONVERSATIONBYID:
       return action.payload;
+
+    case UPDATEICOMINGMESSAGES:
+      const newIncomingMessages = [...activeConversation.allMessages, action.payload];
+      return { ...activeConversation, allMessages: newIncomingMessages };
 
     case SETFUZZYSEARCHRESULTS:
       var options = {

@@ -26,6 +26,7 @@ class Texteditor extends Component {
     e.preventDefault();
     const htmlContent = stateToHTML(this.state.editorState.getCurrentContent());
     await this.props.addOutgoingMessage(htmlContent);
+    // Reset state
     const editorState = EditorState.push(
       this.state.editorState,
       ContentState.createFromText('')

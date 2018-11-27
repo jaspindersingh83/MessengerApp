@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import ReactHtmlParser from 'react-html-parser';
 // actions
-import { closeConversation } from '../../actions';
+import { closeConversation, initializeSocket } from '../../actions';
 
 // Components
 import FuzzySearchBar from './FuzzySearchBar';
@@ -11,6 +11,7 @@ import Texteditor from './RichtextEditor';
 class Conversation extends Component {
   componentDidMount() {
     this.scrollToBottom();
+    //this.props.initializeSocket(this.props.id);
   }
   componentDidUpdate(prevProps, prevState) {
     this.scrollToBottom();
@@ -21,7 +22,9 @@ class Conversation extends Component {
   render() {
     let messagesToRender;
     const { allMessages, fuzzySearchResults, name } = this.props;
-    fuzzySearchResults  && fuzzySearchResults.length ? messagesToRender=fuzzySearchResults : messagesToRender=allMessages
+    fuzzySearchResults && fuzzySearchResults
+      ? (messagesToRender = fuzzySearchResults)
+      : (messagesToRender = allMessages);
     return (
       <div className="conversation">
         <div className="coversation__namebar">
@@ -82,5 +85,5 @@ const mapStateToProps = state => {
 
 export default connect(
   mapStateToProps,
-  { closeConversation }
+  { closeConversation, initializeSocket }
 )(Conversation);

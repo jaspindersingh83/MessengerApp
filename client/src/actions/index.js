@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Socket from 'socket.io-client';
 
 // Dashboard Actions
 export const GETALLCONVERSATIONS = 'GETALLCONVERSATIONS';
@@ -9,6 +10,7 @@ export const ADDOUTGOINGMESSAGE = 'ADDOUTGOINGMESSAGE';
 export const CLOSECONVERSATION = 'CLOSECONVERSATION';
 export const GETCONVERSATIONBYID = 'GETCONVERSATIONBYID';
 export const GETSTORAGE = 'GETSTORAGE';
+export const UPDATEICOMINGMESSAGES = 'UPDATEICOMINGMESSAGES';
 export const SETFUZZYSEARCHRESULTS = 'SETFUZZYSEARCHRESULTS';
 
 // Dashboard Action Functions
@@ -101,4 +103,22 @@ export const handleFuzzySearch = e => {
     type: SETFUZZYSEARCHRESULTS,
     payload: searchInput
   };
+};
+
+// Websocket for rendering incoming messages in real time
+export const initializeSocket = (id) => {
+  const apiUrl = `https://sec.meetkaruna.com/api/v1/conversations/${id}`;
+  // Initialize Socket
+  this.socket = Socket(apiUrl);
+  // Receives Response after the update
+  this.socket.on('updateIncomingMessages', response => {
+    return {
+      type: UPDATEICOMINGMESSAGES,
+      payload: response.data.messages
+    };
+  });
+  // Error Handling
+  this.socket.on('error', data => {
+    this.props.history.push('/');
+  });
 };
