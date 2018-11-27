@@ -13,6 +13,8 @@ class Dashboard extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      //Incase of memory leak use isLoading state attribute
+      isLoading: true,
       searchInput: '',
       allConversations: [],
       searchResults: [],
@@ -35,28 +37,27 @@ class Dashboard extends Component {
       this.setStorage(this.state.conversationActive);
     });
   }
-
-  setStorage = async columns => {
-    await localStorage.setItem('data', JSON.stringify(columns));
-  };
-
-  getStorage = async () => {
-    const conversationActive = await JSON.parse(localStorage.getItem('data'));
+  closeConversation = e => {
     this.setState({
-      conversationActive
+      conversationActive: {}
     });
   };
 
   getConversations = async () => {
     const apiUrl = 'https://sec.meetkaruna.com/api/v1/conversations';
-    const getConversations = await axios.get(apiUrl);
-    const numOfPages = Math.floor(
-      getConversations.data.total / getConversations.data.per_page
-    );
-    let allConversations = getConversations.data.data;
-    for (let i = 1; i <= numOfPages; i++) {
-      const newConversations = await axios.get(`${apiUrl}?page=${i}`);
-      allConversations = [...allConversations, ...newConversations.data.data];
+    let allConversations;
+    try {
+      const getConversations = await axios.get(apiUrl);
+      const numOfPages = Math.floor(
+        getConversations.data.total / getConversations.data.per_page
+      );
+      allConversations = getConversations.data.data;
+      for (let i = 1; i <= numOfPages; i++) {
+        const newConversations = await axios.get(`${apiUrl}?page=${i}`);
+        allConversations = [...allConversations, ...newConversations.data.data];
+      }
+    } catch (error) {
+      console.log(error);
     }
     allConversations.sort((conv1, conv2) => {
       // convert to unix timestamp using moment js and then sort
@@ -68,6 +69,13 @@ class Dashboard extends Component {
     });
     this.setState({
       allConversations
+    });
+  };
+
+  getStorage = () => {
+    const conversationActive = JSON.parse(localStorage.getItem('data'));
+    this.setState({
+      conversationActive
     });
   };
 
@@ -94,10 +102,9 @@ class Dashboard extends Component {
       conversationActive: { id, name }
     });
   };
-  closeConversation = e => {
-    this.setState({
-      conversationActive: {}
-    });
+
+  setStorage = conversation => {
+    localStorage.setItem('data', JSON.stringify(conversation));
   };
   render() {
     let conversations;

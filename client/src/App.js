@@ -8,7 +8,7 @@ import { Provider } from 'react-redux';
 import ReduxPromise from 'redux-promise';
 
 // Components
-import Board from '../src/components/Board'
+import Dashboard from '../src/components/Dashboard/Dashboard';
 const createStoreWithMiddleware = applyMiddleware(ReduxPromise)(createStore);
 
 class App extends Component {
@@ -22,8 +22,7 @@ class App extends Component {
         )}
       >
         <div className="App">
-        
-        <Board />
+          <Dashboard />
         </div>
       </Provider>
     );

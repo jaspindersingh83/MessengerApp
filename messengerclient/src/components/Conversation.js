@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 // Modules
 import axios from 'axios';
+// Rich Text is stored as a string of HTML hence we use below
+// module to parse and display the HTML correctly in chat window
 import ReactHtmlParser from 'react-html-parser';
 import Socket from 'socket.io-client';
 // Components
@@ -15,23 +17,23 @@ class Conversation extends Component {
     this.state = {
       id: props.id,
       name: props.name,
+      allMessages: [],
       searchInput: '',
       outGoingMessage: '',
-      allMessages: [],
       searchResults: []
     };
-    this.initializeSocket(props.id);
+    // Websocket is giving CORs error
+    // Need to test better with backend
+    //this.initializeSocket();
   }
   // Needed Async only for scrollTo Bottom because scrollToBottom
   // was getting invoked even before all the messages are HTTPed
-  async componentDidMount() {
+  componentDidMount() {
     //Fetch all the messages of a conversation data using api GET /conversations/<uuid>
-    await this.getConversationById(this.state.id);
+    this.getConversationById(this.state.id);
     this.scrollToBottom();
   }
-  scrollToBottom = () => {
-    this.messagesEnd.scrollIntoView({ behavior: 'smooth' });
-  };
+
   async componentWillReceiveProps(nextProps) {
     await this.setState({
       id: nextProps.id,
@@ -42,14 +44,19 @@ class Conversation extends Component {
   }
   getConversationById = async id => {
     const apiUrl = `https://sec.meetkaruna.com/api/v1/conversations/${id}`;
-    const getConversationById = await axios.get(apiUrl);
-    const numOfPages = Math.floor(
-      getConversationById.data.total / getConversationById.data.per_page
-    );
-    let allMessages = getConversationById.data.data.messages;
-    for (let i = 1; i <= numOfPages; i++) {
-      const newMessages = await axios.get(`${apiUrl}?page=${i}`);
-      allMessages = [...allMessages, ...newMessages.data.data.messages];
+    let allMessages;
+    try {
+      const getConversationById = await axios.get(apiUrl);
+      const numOfPages = Math.floor(
+        getConversationById.data.total / getConversationById.data.per_page
+      );
+      allMessages = getConversationById.data.data.messages;
+      for (let i = 1; i <= numOfPages; i++) {
+        const newMessages = await axios.get(`${apiUrl}?page=${i}`);
+        allMessages = [...allMessages, ...newMessages.data.data.messages];
+      }
+    } catch (error) {
+      console.log(error);
     }
     this.setState({
       allMessages
@@ -62,11 +69,15 @@ class Conversation extends Component {
       ...this.state.allMessages,
       { body: outGoingMessage, direction: 'outgoing' }
     ];
-    if (outGoingMessage.length) {
+    // <p><br></p> is the rich text HTML for an empty string
+    // Hence we check if outgoing message is not empty
+    // and display outgoing message if its not an empty Rich Text string
+    if (outGoingMessage !== '<p><br></p>') {
       await this.setState({
         outGoingMessage,
         allMessages
       });
+      // Scroll to bottom once outgoing message is displayed
       this.scrollToBottom();
     }
   };
@@ -90,8 +101,8 @@ class Conversation extends Component {
   };
 
   // Websocket for rendering incoming messages in real time
-  initializeSocket = id => {
-    const apiUrl = `https://sec.meetkaruna.com/api/v1/conversations/${id}`;
+  initializeSocket = () => {
+    const apiUrl = `https://sec.meetkaruna.com/api/v1/conversations/${this.state.id}`;
     // Initialize Socket
     this.socket = Socket(apiUrl);
     // Receives Response after the update
@@ -102,6 +113,9 @@ class Conversation extends Component {
     this.socket.on('error', data => {
       this.props.history.push('/');
     });
+  };
+  scrollToBottom = () => {
+    this.messagesEnd.scrollIntoView({ behavior: 'smooth' });
   };
   render() {
     let messages;

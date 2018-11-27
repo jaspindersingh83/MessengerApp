@@ -1,31 +1,74 @@
-.Board {
+.home {
   display: flex;
-  flex-direction: column;
-  margin: auto;
-  width: 40%;
-  border: 1px solid gray;
-  box-sizing: border-box;
-}
-.Board__Column {
-  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-end;
   width: 100%;
+}
+
+.dashboard,.conversation {
+  border: 1px solid darkgray;
+  width: 35%;
+  margin-right: 30px;
+  margin-bottom: 5px;
+}
+.dashboard__container {
+  height: 600px;
+  overflow: auto;
+}
+.dashboard__conversation {
+  display: flex;
   height: 60px;
   justify-content: space-around;
   align-items: center;
 }
 
-.Board__Column:hover{
-  background-color: white;
+.dashboard__conversation:hover {
+  background-color: lightgray;
   cursor: pointer;
 }
-
-.Board__Column_Task {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  background-color: white;
-  margin-top: 5px;
-  padding: 14px 8px;
+.conversation__container {
+  height: 400px;
+  overflow: auto;
+}
+.conversation__incoming,
+.conversation__outgoing {
+  font-size: 16px;
+  padding: 5px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  border-radius: 15px;
 }
 
+.conversation__incoming {
+  background-color: white;
+  text-align: end;
+  margin-left: 80px;
+  margin-right: 10px;
+}
+
+.conversation__outgoing {
+  background-color: lightblue;
+  margin-right: 80px;
+  margin-left: 10px;
+}
+
+.coversation__namebar {
+  display: flex;
+  justify-content: space-between;
+  padding: 0px 7px;
+  color: white;
+  line-height: 30px;
+  height: 30px;
+  background-color: blue;
+}
+
+div.DraftEditor-root {
+  border-top: 1px solid darkgray;
+  width: 100%;
+  height: 50px;
+  padding: 5px;
+  font-size: 16px;
+  box-sizing: border-box;
+  overflow-y: scroll;
+}
 

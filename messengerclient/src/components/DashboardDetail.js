@@ -16,8 +16,9 @@ const DashboardDetail = props => {
         );
       }}
     >
-      <p style={{ width: '40%' }}>{props.conversation.name}</p>
+      <p style={{ width: '30%' }}>{props.conversation.name}</p>
       <p>{props.conversation.unread}</p>
+      <p>{props.conversation.last_message.created_at}</p>
       <p>{timeLastMessage}</p>
     </div>
   );

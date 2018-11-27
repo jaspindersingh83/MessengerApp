@@ -3,7 +3,12 @@ import { Editor, EditorState, ContentState, RichUtils } from 'draft-js';
 import { stateToHTML } from 'draft-js-export-html';
 import { Glyphicon } from 'react-bootstrap';
 
-export default class Texteditor extends Component {
+import { connect } from 'react-redux';
+
+// actions
+import { addOutgoingMessage } from '../../actions';
+
+class Texteditor extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -20,7 +25,7 @@ export default class Texteditor extends Component {
   handleReturn = async e => {
     e.preventDefault();
     const htmlContent = stateToHTML(this.state.editorState.getCurrentContent());
-    await this.props.handleMessageSubmit(htmlContent);
+    await this.props.addOutgoingMessage(htmlContent);
     const editorState = EditorState.push(
       this.state.editorState,
       ContentState.createFromText('')
@@ -78,3 +83,10 @@ export default class Texteditor extends Component {
     );
   }
 }
+
+const mapStateToProps = state => ({});
+
+export default connect(
+  mapStateToProps,
+  { addOutgoingMessage }
+)(Texteditor);
