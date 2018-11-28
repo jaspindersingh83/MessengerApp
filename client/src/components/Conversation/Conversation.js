@@ -22,7 +22,7 @@ class Conversation extends Component {
   render() {
     let messagesToRender;
     const { allMessages, fuzzySearchResults, name } = this.props;
-    fuzzySearchResults && fuzzySearchResults
+    fuzzySearchResults && fuzzySearchResults.length
       ? (messagesToRender = fuzzySearchResults)
       : (messagesToRender = allMessages);
     return (
